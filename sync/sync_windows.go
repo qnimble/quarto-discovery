@@ -25,7 +25,7 @@ import (
 	"unsafe"
 
 	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
-	"go.bug.st/serial/enumerator"
+	"github.com/ben-qnimble/go-serial/enumerator"
 )
 
 //go:generate go run golang.org/x/sys/windows/mkwinsyscall -output zsyscall_windows.go sync_windows.go

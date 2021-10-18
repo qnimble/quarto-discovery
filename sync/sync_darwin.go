@@ -22,7 +22,7 @@ import (
 	"syscall"
 
 	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
-	"go.bug.st/serial/enumerator"
+	"github.com/ben-qnimble/go-serial/enumerator"
 )
 
 // Start the sync process, successful events will be passed to eventCB, errors to errorCB.

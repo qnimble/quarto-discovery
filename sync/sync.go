@@ -20,7 +20,7 @@ package sync
 import (
 	"github.com/arduino/go-properties-orderedmap"
 	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
-	"go.bug.st/serial/enumerator"
+	"github.com/ben-qnimble/go-serial/enumerator"
 )
 
 // processUpdates sends 'add' and 'remove' events by comparing two ports enumeration
