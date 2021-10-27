@@ -1,5 +1,5 @@
 //
-// This file is part of serial-discovery.
+// This file is part of quarto-discovery.
 //
 // Copyright 2018 ARDUINO SA (http://www.arduino.cc/)
 //

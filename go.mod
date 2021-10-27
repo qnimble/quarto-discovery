@@ -1,4 +1,4 @@
-module github.com/arduino/serial-discovery
+module github.com/qnimble/quarto-discovery
 
 require (
 	github.com/arduino/go-paths-helper v1.6.1 // indirect

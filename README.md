@@ -1,10 +1,10 @@
 # Arduino pluggable discovery for serial ports
 
-The `serial-discovery` tool is a command line program that interacts via stdio. It accepts commands as plain ASCII strings terminated with LF `\n` and sends response as JSON.
+The `quarto-discovery` tool is a command line program that interacts via stdio. It accepts commands as plain ASCII strings terminated with LF `\n` and sends response as JSON. It is forked and based on ['serial-discovery'](https://github.com/arduino/serial-discovery).
 
 ## How to build
 
-Install a recent go environment (>=13.0) and run `go build`. The executable `serial-discovery` will be produced in your working directory.
+Install a recent go environment (>=13.0) and run `go build`. The executable `quarto-discovery` will be produced in your working directory.
 
 ## Usage
 
@@ -82,21 +82,21 @@ The `LIST` command returns a list of the currently available serial ports. The f
   "eventType": "list",
   "ports": [
     {
-      "address": "/dev/ttyACM0",
-      "label": "/dev/ttyACM0",
+      "address": "COM16",
+      "label": "COM16",
       "properties": {
-        "pid": "0x804e",
-        "vid": "0x2341",
-        "serialNumber": "EBEABFD6514D32364E202020FF10181E"
+        "pid": "0x0941",
+        "vid": "0x1781",
+        "serialNumber": "12345678"
       },
       "protocol": "serial",
-      "protocolLabel": "Serial Port (USB)"
+      "protocolLabel": "Quarto"
     }
   ]
 }
 ```
 
-The `ports` field contains a list of the available serial ports. If the serial port comes from an USB serial converter the USB VID/PID and USB SERIAL NUMBER properties are also reported inside `properties`.
+The `ports` field contains a list of the available Quarto devices.
 
 The list command is a one-shot command, if you need continuous monitoring of ports you should use `START_SYNC` command.
 
@@ -120,15 +120,15 @@ The `add` events looks like the following:
 {
   "eventType": "add",
   "port": {
-    "address": "/dev/ttyACM0",
-    "label": "/dev/ttyACM0",
+    "address": "COM16",
+    "label": "COM16",
     "properties": {
-      "pid": "0x804e",
-      "vid": "0x2341",
-      "serialNumber": "EBEABFD6514D32364E202020FF10181E"
+      "pid": "0x0941",
+      "vid": "0x1781",
+      "serialNumber": "12345678"
     },
     "protocol": "serial",
-    "protocolLabel": "Serial Port (USB)"
+    "protocolLabel": "Quarto"
   }
 }
 ```
@@ -141,7 +141,7 @@ The `remove` event looks like this:
 {
   "eventType": "remove",
   "port": {
-    "address": "/dev/ttyACM0",
+    "address": "COM16",
     "protocol": "serial"
   }
 }
@@ -154,7 +154,7 @@ in this case only the `address` and `protocol` fields are reported.
 A possible transcript of the discovery usage:
 
 ```
-$ ./serial-discovery
+$ ./quarto-discovery
 START
 {
   "eventType": "start",
@@ -163,19 +163,18 @@ START
 LIST
 {
   "eventType": "list",
-  "ports": [
-    {
-      "address": "/dev/ttyACM0",
-      "label": "/dev/ttyACM0",
-      "protocol": "serial",
-      "protocolLabel": "Serial Port (USB)",
-      "properties": {
-        "pid": "0x004e",
-        "serialNumber": "EBEABFD6514D32364E202020FF10181E",
-        "vid": "0x2341"
-      }
-    }
-  ]
+  "port":
+  {
+    "address": "COM16",
+    "label": "COM16",
+    "properties": {
+       "pid": "0x0941",
+       "vid": "0x1781",
+       "serialNumber": "12345678"
+    },
+    "protocol": "serial",
+    "protocolLabel": "Quarto"
+  }
 }
 START_SYNC
 {
@@ -184,37 +183,39 @@ START_SYNC
 }
 {                                  <--- this event has been immediately sent
   "eventType": "add",
-  "port": {
-    "address": "/dev/ttyACM0",
-    "label": "/dev/ttyACM0",
-    "protocol": "serial",
-    "protocolLabel": "Serial Port (USB)",
+  "port":
+  {
+    "address": "COM16",
+    "label": "COM16",
     "properties": {
-      "pid": "0x004e",
-      "serialNumber": "EBEABFD6514D32364E202020FF10181E",
-      "vid": "0x2341"
-    }
+       "pid": "0x0941",
+       "vid": "0x1781",
+       "serialNumber": "12345678"
+    },
+    "protocol": "serial",
+    "protocolLabel": "Quarto"
   }
 }
 {                                  <--- the board has been disconnected here
   "eventType": "remove",
   "port": {
-    "address": "/dev/ttyACM0",
+    "address": "COM16",
     "protocol": "serial"
   }
 }
 {                                  <--- the board has been connected again
   "eventType": "add",
-  "port": {
-    "address": "/dev/ttyACM0",
-    "label": "/dev/ttyACM0",
-    "protocol": "serial",
-    "protocolLabel": "Serial Port (USB)",
+  "port":
+  {
+    "address": "COM16",
+    "label": "COM16",
     "properties": {
-      "pid": "0x004e",
-      "serialNumber": "EBEABFD6514D32364E202020FF10181E",
-      "vid": "0x2341"
-    }
+       "pid": "0x0941",
+       "vid": "0x1781",
+       "serialNumber": "12345678"
+    },
+    "protocol": "serial",
+    "protocolLabel": "Quarto"
   }
 }
 QUIT
@@ -225,20 +226,13 @@ QUIT
 $
 ```
 
-## Security
-
-If you think you found a vulnerability or other security-related bug in this project, please read our
-[security policy](https://github.com/arduino/serial-discovery/security/policy) and report the bug to our Security Team 🛡️
-Thank you!
-
-e-mail contact: security@arduino.cc
-
 ## License
 
 Copyright (c) 2018 ARDUINO SA (www.arduino.cc)
+Copyright (c) 2021 qNimble Inc (qnimble.com)
 
 The software is released under the GNU General Public License, which covers the main body
-of the serial-discovery code. The terms of this license can be found at:
+of the quarto-discovery code. The terms of this license can be found at:
 https://www.gnu.org/licenses/gpl-3.0.en.html
 
-See [LICENSE.txt](https://github.com/arduino/serial-discovery/blob/master/LICENSE.txt) for details.
+See [LICENSE.txt](https://github.com/qnimble/quarto-discovery/blob/main/LICENSE.txt) for details.

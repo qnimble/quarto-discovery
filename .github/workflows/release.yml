@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+env:
+  PROJECT_NAME: quarto-discovery
+
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{env.GITHUB_REF_SLUG}}
+          body: "Release ${{env.GITHUB_REF_SLUG}} of ${{env.PROJECT_NAME}}"
+
+  build_release:
+    name: Publish for ${{ matrix.os }}-${{matrix.arch}}
+    runs-on: ${{ matrix.os }}
+    needs: create_release
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            arch: amd64
+            suffix: -linux-amd64
+            archive_ext: .tar.bz2
+          - os: ubuntu-latest
+            arch: i686
+            suffix: -linux-i686
+            make_flags: "EXTRA_FLAGS=-m32"
+            archive_ext: .tar.bz2
+          - os: windows-latest
+            arch: i686
+            msystem: MINGW32
+            suffix: -win32
+            ext: .exe
+            archive_ext: .zip
+          - os: windows-latest
+            arch: x86_64
+            msystem: MINGW64
+            suffix: -win64
+            archive_ext: .zip
+            ext: .exe
+          - os: macos-latest
+            arch: amd64
+            suffix: -mac
+            archive_ext: .tar.bz2
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+      - name: get linux multilib
+        if: ${{matrix.os == 'ubuntu-latest'}}
+        run: sudo apt-get update; sudo apt-get install golang
+      - name: get msys2
+        uses: msys2/setup-msys2@v2
+        if: ${{matrix.os == 'windows-latest'}}
+        with:
+          msystem: ${{ matrix.msystem }}
+          install: git base-devel binutils mingw-w64-${{ matrix.arch }}-toolchain mingw-w64-${{ matrix.arch }}-go
+          release: false
+      - name: make (win)
+        if: ${{matrix.os == 'windows-latest'}}
+        shell: msys2 {0}
+        run: |
+          git reset --hard
+          go build
+          ls *
+          mkdir ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}
+          cp ${{env.PROJECT_NAME}}${{matrix.ext}} ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}/${{env.PROJECT_NAME}}${{matrix.ext}}
+          zip ${{env.PROJECT_NAME}}.zip ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}/*
+          ls *
+      - name: make (not win)
+        if: ${{matrix.os != 'windows-latest'}}
+        run: |
+          go build
+          mkdir ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}
+          cp ${{env.PROJECT_NAME}} ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}/${{env.PROJECT_NAME}}
+          tar -cjf ${{env.PROJECT_NAME}}.tar.bz2 ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}
+          ls *
+      - name: Upload file (Binary)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ${{env.PROJECT_NAME}}${{matrix.ext}}
+          asset_name: ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}${{matrix.suffix}}${{matrix.ext}}
+          asset_content_type: application/octet-stream
+
+      - name: Upload file (Archive)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ${{env.PROJECT_NAME}}${{matrix.archive_ext}}
+          asset_name: ${{env.PROJECT_NAME}}-${{env.GITHUB_REF_SLUG}}${{matrix.suffix}}${{matrix.archive_ext}}
+          asset_content_type: application/octet-stream
