@@ -65,7 +65,10 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 			return
 		}
 		for _, port := range current {
-			eventCB("add", toDiscoveryPort(port))
+			res := toDiscoveryPort(port)
+			if res.Address != "" {
+				eventCB("add", toDiscoveryPort(port))
+			}
 		}
 
 		// wait for events

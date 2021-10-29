@@ -22,8 +22,8 @@ import (
 	"io"
 
 	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
-	"github.com/s-urbaniak/uevent"
 	"github.com/ben-qnimble/go-serial/enumerator"
+	"github.com/s-urbaniak/uevent"
 )
 
 // Start the sync process, successful events will be passed to eventCB, errors to errorCB.
@@ -52,7 +52,10 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 	go func() {
 		// Output initial port state
 		for _, port := range current {
-			eventCB("add", toDiscoveryPort(port))
+			res := toDiscoveryPort(port)
+			if res.Address != "" {
+				eventCB("add", toDiscoveryPort(port))
+			}
 		}
 
 		dec := uevent.NewDecoder(syncReader)
