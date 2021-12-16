@@ -30,16 +30,20 @@ import (
 func processUpdates(old, new []*enumerator.PortDetails, eventCB discovery.EventCallback) {
 	for _, oldPort := range old {
 		if !portListHas(new, oldPort) {
-			eventCB("remove", &discovery.Port{
-				Address:  oldPort.Name,
-				Protocol: "serial",
-			})
+			if oldPort.VID == "1781" && oldPort.PID == "0941" && oldPort.MI == "00" {
+				eventCB("remove", &discovery.Port{
+					Address:  oldPort.Name,
+					Protocol: "sam-ba",
+				})
+			}
 		}
 	}
 
 	for _, newPort := range new {
 		if !portListHas(old, newPort) {
-			eventCB("add", toDiscoveryPort(newPort))
+			if newPort.VID == "1781" && newPort.PID == "0941" && newPort.MI == "00" {
+				eventCB("add", toDiscoveryPort(newPort))
+			}
 		}
 	}
 }
@@ -67,22 +71,34 @@ func portListHas(list []*enumerator.PortDetails, port *enumerator.PortDetails) b
 func toDiscoveryPort(port *enumerator.PortDetails) *discovery.Port {
 	props := properties.NewMap()
 	if port.IsUSB {
-		if port.VID == "1781" && port.PID == "0941" && port.MI == "00" {
-			protocolLabel := "Quarto"
+		props.Set("vid", "0x"+port.VID)
+		props.Set("pid", "0x"+port.PID)
+		props.Set("mi", "0x"+port.MI)
 
-			props.Set("vid", "0x"+port.VID)
-			props.Set("pid", "0x"+port.PID)
-			props.Set("mi", "0x"+port.MI)
+		if port.VID == "1781" && port.PID == "0941" && port.MI == "00" {
+
+			props.Set("upload", "1")
 			props.Set("serialNumber", port.SerialNumber)
 
 			res := &discovery.Port{
 				Address:       port.Name,
-				AddressLabel:  port.Name,
-				Protocol:      "serial",
-				ProtocolLabel: protocolLabel,
+				AddressLabel:  "Quarto (" + port.Name + ")",
+				Protocol:      "sam-ba",
+				ProtocolLabel: "sam-ba emulator",
 				Properties:    props,
 			}
 			return res
+		} else {
+//			res := &discovery.Port{
+//				Address:       port.Name,
+//				AddressLabel:  port.Name,
+//				Protocol:      "serial",
+//				ProtocolLabel: "Serial Device",
+//				Properties:    props,
+//			}
+			//return &discovery.Port{}
+			//return res
+
 		}
 	}
 	return &discovery.Port{}
