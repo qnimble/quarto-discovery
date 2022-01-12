@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
+	discovery "github.com/ben-qnimble/pluggable-discovery-protocol-handler/v3"
 	"github.com/qnimble/quarto-discovery/args"
 	"github.com/qnimble/quarto-discovery/sync"
 	"github.com/qnimble/quarto-discovery/version"

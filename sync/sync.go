@@ -19,7 +19,7 @@ package sync
 
 import (
 	"github.com/arduino/go-properties-orderedmap"
-	discovery "github.com/arduino/pluggable-discovery-protocol-handler/v2"
+	discovery "github.com/ben-qnimble/pluggable-discovery-protocol-handler/v3"
 	"github.com/ben-qnimble/go-serial/enumerator"
 )
 
