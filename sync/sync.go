@@ -33,7 +33,7 @@ func processUpdates(old, new []*enumerator.PortDetails, eventCB discovery.EventC
 			if oldPort.VID == "1781" && oldPort.PID == "0941" {
 				eventCB("remove", &discovery.Port{
 					Address:  oldPort.Name,
-					Protocol: "sam-ba",
+					Protocol: "qnimble",
 				})
 			}
 		}
@@ -83,8 +83,8 @@ func toDiscoveryPort(port *enumerator.PortDetails) *discovery.Port {
 			res := &discovery.Port{
 				Address:       port.Name,
 				AddressLabel:  "Quarto (" + port.Name + ")",
-				Protocol:      "sam-ba",
-				ProtocolLabel: "sam-ba emulator",
+				Protocol:      "qnimble",
+				ProtocolLabel: "qnimble sam-ba emulator",
 				Properties:    props,
 			}
 			return res

@@ -35,7 +35,7 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
         protocolMap := make(map[string]string)
 	for _, c := range current {
 	if ( (c.VID == "1781") && (c.PID == "0941") ) {
-		protocolMap[c.Name]="sam-ba"
+		protocolMap[c.Name]="qnimble"
 	} else {
 		protocolMap[c.Name]="serial"
 	}
@@ -88,7 +88,7 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 				}
 				for _, port := range portList {
 					if ( (port.VID == "1781") && (port.PID == "0941") ) {
-						protocolMap[port.Name]="sam-ba"
+						protocolMap[port.Name]="qnimble"
 					} else {
 						protocolMap[port.Name]="serial"
 					}
