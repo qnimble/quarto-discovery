@@ -31,9 +31,14 @@ func processUpdates(old, new []*enumerator.PortDetails, eventCB discovery.EventC
 	for _, oldPort := range old {
 		if !portListHas(new, oldPort) {
 			if oldPort.VID == "1781" && oldPort.PID == "0941" {
+				protocol := "serial"
+				if ( oldPort.MI == "00" ) {
+					protocol = "qnimble"
+				}
+
 				eventCB("remove", &discovery.Port{
 					Address:  oldPort.Name,
-					Protocol: "qnimble",
+					Protocol: protocol,
 				})
 			}
 		}
