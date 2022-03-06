@@ -32,6 +32,14 @@ import (
 func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (chan<- bool, error) {
 	// Get the current port list to send as initial "add" events
 	current, err := enumerator.GetDetailedPortsList()
+        protocolMap := make(map[string]string)
+	for _, c := range current {
+	if ( (c.VID == "1781") && (c.PID == "0941") && (c.MI == "00") ) {
+		protocolMap[c.Name]="qnimble"
+	} else {
+		protocolMap[c.Name]="serial"
+	}
+}
 	if err != nil {
 		return nil, err
 	}
@@ -79,6 +87,12 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 					continue
 				}
 				for _, port := range portList {
+					if ( (port.VID == "1781") && (port.PID == "0941") && (port.MI == "00") ) {
+						protocolMap[port.Name]="qnimble"
+					} else {
+						protocolMap[port.Name]="serial"
+					}
+
 					if port.IsUSB && port.Name == changedPort {
 						eventCB("add", toDiscoveryPort(port))
 						break
@@ -86,9 +100,13 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 				}
 			}
 			if evt.Action == "remove" {
+				protocol, ok := protocolMap[changedPort]
+                                if !ok {
+					protocol = "unknown"
+				}
 				eventCB("remove", &discovery.Port{
 					Address:  changedPort,
-					Protocol: "serial",
+					Protocol: protocol,
 				})
 			}
 		}

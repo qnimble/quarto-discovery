@@ -30,7 +30,7 @@ import (
 func processUpdates(old, new []*enumerator.PortDetails, eventCB discovery.EventCallback) {
 	for _, oldPort := range old {
 		if !portListHas(new, oldPort) {
-			if oldPort.VID == "1781" && oldPort.PID == "0941" && oldPort.MI == "00" {
+			if oldPort.VID == "1781" && oldPort.PID == "0941" {
 				eventCB("remove", &discovery.Port{
 					Address:  oldPort.Name,
 					Protocol: "qnimble",
@@ -41,7 +41,7 @@ func processUpdates(old, new []*enumerator.PortDetails, eventCB discovery.EventC
 
 	for _, newPort := range new {
 		if !portListHas(old, newPort) {
-			if newPort.VID == "1781" && newPort.PID == "0941" && newPort.MI == "00" {
+			if newPort.VID == "1781" && newPort.PID == "0941"  {
 				eventCB("add", toDiscoveryPort(newPort))
 			}
 		}
@@ -89,15 +89,15 @@ func toDiscoveryPort(port *enumerator.PortDetails) *discovery.Port {
 			}
 			return res
 		} else {
-//			res := &discovery.Port{
-//				Address:       port.Name,
-//				AddressLabel:  port.Name,
-//				Protocol:      "serial",
-//				ProtocolLabel: "Serial Device",
-//				Properties:    props,
-//			}
+			res := &discovery.Port{
+				Address:       port.Name,
+				AddressLabel:  port.Name,
+				Protocol:      "serial",
+				ProtocolLabel: "Serial Device",
+				Properties:    props,
+			}
 			//return &discovery.Port{}
-			//return res
+			return res
 
 		}
 	}
