@@ -34,7 +34,7 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 	current, err := enumerator.GetDetailedPortsList()
         protocolMap := make(map[string]string)
 	for _, c := range current {
-	if ( (c.VID == "1781") && (c.PID == "0941") ) {
+	if ( (c.VID == "1781") && (c.PID == "0941") && (c.MI == "00") ) {
 		protocolMap[c.Name]="qnimble"
 	} else {
 		protocolMap[c.Name]="serial"
@@ -87,7 +87,7 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 					continue
 				}
 				for _, port := range portList {
-					if ( (port.VID == "1781") && (port.PID == "0941") ) {
+					if ( (port.VID == "1781") && (port.PID == "0941") && (port.MI == "00") ) {
 						protocolMap[port.Name]="qnimble"
 					} else {
 						protocolMap[port.Name]="serial"

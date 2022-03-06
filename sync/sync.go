@@ -75,7 +75,7 @@ func toDiscoveryPort(port *enumerator.PortDetails) *discovery.Port {
 		props.Set("pid", "0x"+port.PID)
 		props.Set("mi", "0x"+port.MI)
 
-		if port.VID == "1781" && port.PID == "0941" {
+		if port.VID == "1781" && port.PID == "0941" && port.MI == "00" {
 
 			props.Set("upload", "1")
 			props.Set("serialNumber", port.SerialNumber)
