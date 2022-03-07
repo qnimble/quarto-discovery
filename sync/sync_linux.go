@@ -34,12 +34,14 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 	current, err := enumerator.GetDetailedPortsList()
         protocolMap := make(map[string]string)
 	for _, c := range current {
-	if ( (c.VID == "1781") && (c.PID == "0941") && (c.MI == "00") ) {
-		protocolMap[c.Name]="qnimble"
-	} else {
-		protocolMap[c.Name]="serial"
+		if ( (c.VID == "1781") && (c.PID == "0941") ) {
+			if (c.MI == "00") {
+				protocolMap[c.Name]="qnimble"
+			} else {
+				protocolMap[c.Name]="serial"
+			}
+		}
 	}
-}
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +64,9 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 		for _, port := range current {
 			res := toDiscoveryPort(port)
 			if res.Address != "" {
-				eventCB("add", toDiscoveryPort(port))
+				if ( (port.VID == "1781") && (port.PID == "0941") ) {
+					eventCB("add", toDiscoveryPort(port))
+				}
 			}
 		}
 
@@ -87,15 +91,17 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
 					continue
 				}
 				for _, port := range portList {
-					if ( (port.VID == "1781") && (port.PID == "0941") && (port.MI == "00") ) {
-						protocolMap[port.Name]="qnimble"
-					} else {
-						protocolMap[port.Name]="serial"
-					}
+					if ( (port.VID == "1781") && (port.PID == "0941") ) {
+						if (port.MI == "00") {
+							protocolMap[port.Name]="qnimble"
+						} else {
+							protocolMap[port.Name]="serial"
+						}
 
-					if port.IsUSB && port.Name == changedPort {
-						eventCB("add", toDiscoveryPort(port))
-						break
+						if port.IsUSB && port.Name == changedPort {
+							eventCB("add", toDiscoveryPort(port))
+							break
+						}
 					}
 				}
 			}
@@ -104,10 +110,12 @@ func Start(eventCB discovery.EventCallback, errorCB discovery.ErrorCallback) (ch
                                 if !ok {
 					protocol = "unknown"
 				}
-				eventCB("remove", &discovery.Port{
-					Address:  changedPort,
-					Protocol: protocol,
-				})
+				if (ok) {
+					eventCB("remove", &discovery.Port{
+						Address:  changedPort,
+						Protocol: protocol,
+					})
+				}
 			}
 		}
 	}()
