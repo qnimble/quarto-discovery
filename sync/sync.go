@@ -80,30 +80,31 @@ func toDiscoveryPort(port *enumerator.PortDetails) *discovery.Port {
 		props.Set("pid", "0x"+port.PID)
 		props.Set("mi", "0x"+port.MI)
 
-		if port.VID == "1781" && port.PID == "0941" && port.MI == "00" {
+		if port.VID == "1781" && port.PID == "0941" {
+			if port.MI == "00" {
 
-			props.Set("upload", "1")
-			props.Set("serialNumber", port.SerialNumber)
+				props.Set("upload", "1")
+				props.Set("serialNumber", port.SerialNumber)
 
-			res := &discovery.Port{
-				Address:       port.Name,
-				AddressLabel:  "Quarto (" + port.Name + ")",
-				Protocol:      "qnimble",
-				ProtocolLabel: "qNimble sam-ba emulator",
-				Properties:    props,
-			}
+				res := &discovery.Port{
+					Address:       port.Name,
+					AddressLabel:  "Quarto (" + port.Name + ")",
+					Protocol:      "qnimble",
+					ProtocolLabel: "qNimble sam-ba emulator",
+					Properties:    props,
+				}
 			return res
-		} else {
-			res := &discovery.Port{
-				Address:       port.Name,
-				AddressLabel:  port.Name,
-				Protocol:      "serial",
-				ProtocolLabel: "Serial Device",
-				Properties:    props,
+			} else {
+				res := &discovery.Port{
+					Address:       port.Name,
+					AddressLabel:  port.Name,
+					Protocol:      "serial",
+					ProtocolLabel: "Serial Device",
+					Properties:    props,
+				}
+				//return &discovery.Port{}
+				return res
 			}
-			//return &discovery.Port{}
-			return res
-
 		}
 	}
 	return &discovery.Port{}
